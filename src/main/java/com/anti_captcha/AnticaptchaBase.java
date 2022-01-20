@@ -322,6 +322,10 @@ public abstract class AnticaptchaBase {
         return errorMessage == null ? "no error message" : errorMessage;
     }
 
+    protected Integer getTaskId() {
+        return taskId;
+    }
+
     private enum SchemeType {
         HTTP,
         HTTPS
