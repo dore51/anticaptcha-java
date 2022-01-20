@@ -118,6 +118,11 @@ public class ImageToText extends AnticaptchaBase implements IAnticaptchaTaskProt
         return postData;
     }
 
+    @SuppressWarnings("WeakerAccess")
+    public Boolean reportTask(Integer taskId) {
+        return reportTask(taskId, "REPORT_INCORRECT_IMAGE_CAPTCHA");
+    }
+
     @Override
     public TaskResultResponse.SolutionData getTaskSolution() {
         return taskInfo.getSolution();

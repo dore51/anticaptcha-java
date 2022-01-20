@@ -2,6 +2,7 @@ package com.anti_captcha;
 
 import com.anti_captcha.ApiResponse.BalanceResponse;
 import com.anti_captcha.ApiResponse.CreateTaskResponse;
+import com.anti_captcha.ApiResponse.ReportTaskResponse;
 import com.anti_captcha.ApiResponse.TaskResultResponse;
 import com.anti_captcha.Helper.DebugHelper;
 import com.anti_captcha.Helper.HttpHelper;
@@ -245,6 +246,72 @@ public abstract class AnticaptchaBase {
         return waitForResult(maxSeconds, 0);
     }
 
+    public JSONObject createReportJson(Integer taskId) {
+        JSONObject postData = new JSONObject();
+
+        try {
+            postData.put("clientKey", clientKey);
+            postData.put("taskId", taskId);
+        } catch (JSONException e) {
+            DebugHelper.out("JSON compilation error: " + e.getMessage(), DebugHelper.Type.ERROR);
+
+            return null;
+        }
+
+        return postData;
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    protected Boolean reportTask(Integer taskId, String reportType) {
+        if (reportType == null) {
+            DebugHelper.out("Failed to report captcha: reportType is null", DebugHelper.Type.ERROR);
+            return false;
+        }
+
+        ApiMethod apiMethod;
+
+        try {
+            apiMethod = ApiMethod.valueOf(reportType);
+        } catch (IllegalArgumentException e) {
+            DebugHelper.out("Failed to report captcha: reportType is invalid", DebugHelper.Type.ERROR);
+            return false;
+        }
+
+        JSONObject reportJson = createReportJson(taskId);
+
+        if (reportJson == null) {
+            DebugHelper.out("JSON error", DebugHelper.Type.ERROR);
+            return false;
+        }
+
+        DebugHelper.out("Connecting to " + host, DebugHelper.Type.INFO);
+        JSONObject postResult = jsonPostRequest(apiMethod, reportJson);
+
+        if (postResult == null) {
+            DebugHelper.out("API error", DebugHelper.Type.ERROR);
+
+            return false;
+        }
+
+        ReportTaskResponse response = new ReportTaskResponse(postResult);
+
+        if (response.getErrorId() == null || !response.getErrorId().equals(0)) {
+            errorMessage = response.getErrorDescription();
+            String errorId = response.getErrorId() == null ? "" : response.getErrorId().toString();
+
+            DebugHelper.out(
+                    "API error - 'Report Captcha' " + errorId + ": " + response.getErrorDescription(),
+                    DebugHelper.Type.ERROR
+            );
+
+            return false;
+        }
+
+        DebugHelper.out("Captcha Reported! " + taskId, DebugHelper.Type.SUCCESS);
+
+        return true;
+    }
+
     @SuppressWarnings("WeakerAccess")
     public void setClientKey(String clientKey_) {
         clientKey = clientKey_;
@@ -263,6 +330,7 @@ public abstract class AnticaptchaBase {
     private enum ApiMethod {
         CREATE_TASK,
         GET_TASK_RESULT,
-        GET_BALANCE
+        GET_BALANCE,
+        REPORT_INCORRECT_IMAGE_CAPTCHA
     }
 }
