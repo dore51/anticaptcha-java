@@ -322,7 +322,7 @@ public abstract class AnticaptchaBase {
         return errorMessage == null ? "no error message" : errorMessage;
     }
 
-    protected Integer getTaskId() {
+    public Integer getTaskId() {
         return taskId;
     }
 
