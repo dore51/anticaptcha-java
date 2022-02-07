@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigInteger;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
@@ -44,6 +45,33 @@ public class JsonHelper {
             }
 
             return null;
+        }
+    }
+
+    public static BigInteger extractBigInteger(JSONObject json, String fieldName) {
+        return extractBigInteger(json, fieldName, false);
+    }
+
+    public static BigInteger extractBigInteger(JSONObject json, String fieldName, boolean silent) {
+        try {
+            return new BigInteger(json.getString(fieldName));
+        } catch (JSONException e1) {
+            String str = extractStr(json, fieldName, silent);
+
+            if (str == null) {
+                if (!silent) {
+                    DebugHelper.jsonFieldParseError(fieldName, json);
+                }
+
+                return null;
+            }
+            try {
+                return new BigInteger(str);
+            } catch (NumberFormatException e2) {
+                DebugHelper.jsonFieldParseError(fieldName, json);
+
+                return null;
+            }
         }
     }
 

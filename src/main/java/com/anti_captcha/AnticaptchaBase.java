@@ -13,6 +13,7 @@ import com.anti_captcha.Http.HttpRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
 public abstract class AnticaptchaBase {
@@ -20,7 +21,7 @@ public abstract class AnticaptchaBase {
     private String host = "api.anti-captcha.com";
     private SchemeType scheme = SchemeType.HTTPS;
     private String errorMessage;
-    private Integer taskId;
+    private BigInteger taskId;
     private String clientKey;
 
     public enum ProxyTypeOption {
@@ -322,7 +323,7 @@ public abstract class AnticaptchaBase {
         return errorMessage == null ? "no error message" : errorMessage;
     }
 
-    public Integer getTaskId() {
+    public BigInteger getTaskId() {
         return taskId;
     }
 

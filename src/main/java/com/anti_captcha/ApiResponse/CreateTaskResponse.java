@@ -5,18 +5,20 @@ import com.anti_captcha.Helper.JsonHelper;
 
 import org.json.JSONObject;
 
+import java.math.BigInteger;
+
 public class CreateTaskResponse {
     private Integer errorId;
     private String errorCode;
     private String errorDescription;
-    private Integer taskId;
+    private BigInteger taskId;
 
     public CreateTaskResponse(JSONObject json) {
         errorId = JsonHelper.extractInt(json, "errorId");
 
         if (errorId != null) {
             if (errorId.equals(0)) {
-                taskId = JsonHelper.extractInt(json, "taskId");
+                taskId = JsonHelper.extractBigInteger(json, "taskId");
             } else {
                 errorCode = JsonHelper.extractStr(json, "errorCode");
                 errorDescription = JsonHelper.extractStr(json, "errorDescription");
@@ -38,7 +40,7 @@ public class CreateTaskResponse {
         return errorDescription == null ? "(no error description)" : errorDescription;
     }
 
-    public Integer getTaskId() {
+    public BigInteger getTaskId() {
         return taskId;
     }
 }
